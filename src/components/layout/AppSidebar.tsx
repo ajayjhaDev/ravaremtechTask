@@ -9,7 +9,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { useAppSelector, useAppDispatch } from '@/redux/hooks';
-import { setActiveMenu } from '@/redux/slices/uiSlice';
+import { setActiveMenu, setSidebarCollapsed } from '@/redux/slices/uiSlice';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -19,7 +19,7 @@ const AppSidebar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { activeMenu } = useAppSelector((state) => state.ui);
+  const { activeMenu, sidebarCollapsed } = useAppSelector((state) => state.ui);
 
   const getSelectedKey = () => {
     if (location.pathname === '/add-product') return 'product-list';
@@ -29,6 +29,9 @@ const AppSidebar = () => {
 
   const handleMenuClick = (key: string) => {
     dispatch(setActiveMenu(key));
+    // close sidebar on mobile after navigation
+    if (window.innerWidth < 992) dispatch(setSidebarCollapsed(true));
+
     if (key === 'product-list') {
       navigate('/add-product');
     } else if (key === 'send-item') {
@@ -78,7 +81,12 @@ const AppSidebar = () => {
 
   return (
     <Sider
+      breakpoint="lg"
+      collapsedWidth={0}
+      collapsed={sidebarCollapsed}
+      onBreakpoint={(broken) => dispatch(setSidebarCollapsed(broken))}
       width={220}
+      className="app-sider"
       style={{
         background: '#fff',
         borderRight: '1px solid #f0f0f0',
@@ -88,6 +96,7 @@ const AppSidebar = () => {
         top: 0,
         bottom: 0,
         overflow: 'auto',
+        zIndex: 1000,
       }}
     >
       <div
