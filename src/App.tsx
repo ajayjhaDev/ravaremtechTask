@@ -1,27 +1,45 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-
-const queryClient = new QueryClient();
+import { Provider } from 'react-redux';
+import { ConfigProvider } from 'antd';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { store } from './redux/store';
+import AppLayout from './components/layout/AppLayout';
+import AddProductPage from './pages/AddProductPage';
+import SendProductPage from './pages/SendProductPage';
+import NotFound from './pages/NotFound';
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+  <Provider store={store}>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#52c41a',
+          borderRadius: 6,
+          fontFamily:
+            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        },
+        components: {
+          Menu: {
+            itemSelectedBg: '#f0f9eb',
+            itemSelectedColor: '#52c41a',
+          },
+          Button: {
+            primaryColor: '#fff',
+          },
+        },
+      }}
+    >
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<Navigate to="/add-product" replace />} />
+            <Route path="/add-product" element={<AddProductPage />} />
+            <Route path="/send-product" element={<SendProductPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AppLayout>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+    </ConfigProvider>
+  </Provider>
 );
 
 export default App;
